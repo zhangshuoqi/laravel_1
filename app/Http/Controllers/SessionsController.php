@@ -7,6 +7,13 @@ use Auth;
 
 class SessionsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('guest',[
+            'only' => ['create']
+        ]);
+    }
+
     public function create()
     {
         return view('sessions.create');
@@ -19,10 +26,10 @@ class SessionsController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials,$request->has('remember'))) {
+        if (Auth::attempt($credentials,$request->has('remember'))) { //验证输入信息与数据库中的数据是否匹配
 
             session()->flash('success', '欢迎回来！');
-            return redirect()->route('users.show', [Auth::user()]);
+            return redirect()->intended(route('users.show', [Auth::user()]));
 
 
         } else {
