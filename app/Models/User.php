@@ -67,7 +67,9 @@ class User extends Authenticatable
 
     public function feed() //将当前用户发布过的所有微博从数据库中取出
     {
-        return $this->statuses()->orderBy('created_at','desc');
+        $user_ids = Auth::user()->followings->pluck('id')->toArray();
+        array_push($user_ids, Auth::user()->id);
+        return Status::whereIn('user_id', $user_ids)->with('user')->orderBy('created_at', 'desc');
     }
 
     public function follow($user_ids)
@@ -90,5 +92,7 @@ class User extends Authenticatable
     {
         return $this->followings->contains($user_id);
     }
+
+
 
 }
